@@ -107,18 +107,18 @@ export default class LatexRenderPlugin extends Plugin {
         el.empty();
         const loadingIndicator = el.createDiv({ cls: 'latex-loading' });
         loadingIndicator.setText('Chargement du rendu LaTeX...');
-
+    
         try {
             const contentToHash = this.settings.preamble + source + this.settings.useShellEscape.toString();
             const hash = crypto.createHash('sha256').update(contentToHash).digest('hex');
             const cacheFileName = `${hash}.svg`;
-
+    
             const absoluteCacheDir = this.app.vault.adapter.getFullPath(this.cacheDir);
             const absoluteTempDir = this.app.vault.adapter.getFullPath(this.tempDir);
-
+    
             const cacheFilePath = normalizePath(path.join(absoluteCacheDir, cacheFileName));
             const tempBaseName = normalizePath(path.join(absoluteTempDir, hash));
-
+    
             try {
                 const cachedSvg = await fs.readFile(cacheFilePath, 'utf-8');
                 this.displaySvg(el, cachedSvg);
@@ -128,12 +128,12 @@ export default class LatexRenderPlugin extends Plugin {
                     console.warn(`Cache read error for ${cacheFilePath}:`, error);
                 }
             }
-
+    
             const latexSource = this.settings.preamble + "\n" + source + END_DOCUMENT;
             const texFilePath = `${tempBaseName}.tex`;
-
+    
             await fs.writeFile(texFilePath, latexSource, 'utf-8');
-
+    
             const latexArgs = [
                 '-interaction=nonstopmode',
                 '-halt-on-error',
@@ -144,16 +144,16 @@ export default class LatexRenderPlugin extends Plugin {
                 latexArgs.push('-shell-escape');
             }
             latexArgs.push(`${hash}.tex`);
-
+    
             await execFile(this.settings.pdflatexPath, latexArgs, { timeout: 15000, cwd: absoluteTempDir });
-
+    
             const dviFilePath = `${tempBaseName}.dvi`;
             await fs.access(dviFilePath, fs.constants.R_OK);
-
+    
             const svgFilePath = `${tempBaseName}.svg`;
             const dvisvgmArgs = ['--no-fonts', '--exact', '-o', svgFilePath, dviFilePath];
             await execFile(this.settings.dvisvgmPath, dvisvgmArgs, { timeout: 10000 });
-
+    
             const generatedSvg = await fs.readFile(svgFilePath, 'utf-8');
             await fs.writeFile(cacheFilePath, generatedSvg, 'utf-8');
             this.displaySvg(el, generatedSvg);
@@ -266,27 +266,6 @@ class LatexRenderSettingTab extends PluginSettingTab {
                 .onChange(async (value) => {
                     this.plugin.settings.cleanupEnabled = value;
                     await this.plugin.saveSettings();
-                }));
-
-        new Setting(containerEl)
-            .setName('Clear Render Cache')
-            .setDesc('Manually clear the SVG cache.')
-            .addButton(button => button
-                .setButtonText("Clear Cache Now")
-                .setWarning()
-                .onClick(async () => {
-                    try {
-                        const files = await fs.readdir(this.plugin.cacheDir);
-                        for (const file of files) {
-                            if (file.endsWith('.svg')) {
-                                await fs.unlink(path.join(this.plugin.cacheDir, file));
-                            }
-                        }
-                        new Notice('LaTeX render cache cleared successfully.');
-                    } catch (error) {
-                        console.error('Failed to clear cache:', error);
-                        new Notice(`Error clearing cache: ${error.message}`);
-                    }
                 }));
     }
 }
