@@ -5,6 +5,6 @@
 	"minAppVersion": "0.15.0",
 	"description": "Render Latex in your notes",
 	"author": "MONMARTHE",
-	"authorUrl": "",
+	"repo": "monmarthev/local-renderer-latex",
 	"isDesktopOnly": false
 }
