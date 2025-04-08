@@ -1,0 +1,78 @@
+/* Styles pour le rendu des SVG LaTeX */
+.latex-rendered-svg {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.latex-rendered-svg svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 5px;
+}
+
+/* Style pour l'indicateur de chargement */
+.latex-loading {
+    text-align: center;
+    font-style: italic;
+    color: var(--text-muted);
+    padding: 10px;
+}
+
+/* Conteneur pour les erreurs de rendu */
+.latex-render-error {
+    border: 1px solid var(--text-error);
+    background-color: var(--background-secondary-alt);
+    color: var(--text-error);
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 4px;
+}
+
+/* Titre du message d'erreur */
+.latex-render-error strong {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Détails préformatés des erreurs (ex. logs) */
+.latex-render-error pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: var(--background-primary);
+    color: var(--text-normal);
+    padding: 8px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    margin: 8px 0;
+}
+
+/* Détails/summary pour afficher le code original en cas d'erreur */
+.latex-render-error details {
+    margin-top: 10px;
+    border-top: 1px solid var(--background-modifier-border);
+    padding-top: 10px;
+}
+
+.latex-render-error summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-muted);
+}
+
+.latex-render-error summary:hover {
+    color: var(--text-normal);
+}
+
+/* Bloc de code original dans les détails d'erreur */
+.latex-render-error details pre {
+    margin-top: 5px;
+    max-height: 300px;
+}
